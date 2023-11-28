@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
   NotFoundException,
@@ -19,7 +20,10 @@ export class UserService {
   ) {}
 
   async hashPassword(password: string): Promise<string> {
-    const hashedPassword = await bcrypt.hash(password, process.env.SALT_ROUNDS);
+    const hashedPassword = await bcrypt.hash(
+      password,
+      parseInt(process.env.SALT_ROUNDS),
+    );
     return hashedPassword;
   }
   async comparePassword({
@@ -35,19 +39,30 @@ export class UserService {
 
   async createAccount(
     createUserDto: createUserDto,
-  ): Promise<{ user: IUser; token: string }> {
-    const hashedPassword = await this.hashPassword(createUserDto.password);
-    const user = await new this.userService({
-      ...createUserDto,
-      password: hashedPassword,
-    });
-    await user.save();
-    const token = await this.jwtService.signAsync({ _id: user._id });
-    return { user, token };
+  ): Promise<{ message: string; token: string }> {
+    try {
+      const hashedPassword = await this.hashPassword(createUserDto.password);
+      const user = await new this.userService({
+        ...createUserDto,
+        password: hashedPassword,
+      });
+      await user.save();
+      const token = await this.jwtService.signAsync(
+        { _id: user._id },
+        { secret: process.env.JWT_SECRET_KEY, expiresIn: '24h' },
+      );
+      return {
+        message: `welcome ${user.displayName} to your awesome chat app ,enjoy with us`,
+        token,
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
   }
   async login(loginDto: loginDto) {
     try {
       const user = await this.userService.findOne({ email: loginDto.email });
+
       if (!user) {
         throw new NotFoundException();
       }
@@ -57,7 +72,10 @@ export class UserService {
         password: loginDto.password,
       });
       if (compareResult) {
-        const token = await this.jwtService.sign({ _id: user._id });
+        const token = await this.jwtService.sign(
+          { _id: user._id },
+          { secret: process.env.JWT_SECRET_KEY, expiresIn: '24h' },
+        );
         return { message: `welcome back ,${user.username}`, token };
       } else {
         throw new UnauthorizedException();

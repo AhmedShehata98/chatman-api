@@ -25,12 +25,14 @@ export const userSchema = new mongoose.Schema(
     email: {
       type: String,
       trim: true,
+      required: true,
     },
     displayName: {
       type: String,
       min: [3, 'must be display Name at least 3 characters'],
       max: [19, 'must be display Name at most 19 characters'],
       trim: true,
+      required: true,
     },
     profilePictureUrl: {
       type: String,

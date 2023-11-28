@@ -9,7 +9,6 @@ import { JwtModule } from '@nestjs/jwt';
     DatabaseModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET_KEY,
-      global: true,
       signOptions: { expiresIn: '24h' },
     }),
   ],
