@@ -14,6 +14,7 @@ export class UserController {
   }
 
   @Post('signup')
+  @UseInterceptors(FileInterceptor(''))
   async searchUsers(@Body() createUserDto: createUserDto) {
     return await this.userService.createAccount(createUserDto);
   }
