@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -19,14 +20,14 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
-  async hashPassword(password: string): Promise<string> {
+  private async hashPassword(password: string): Promise<string> {
     const hashedPassword = await bcrypt.hash(
       password,
       parseInt(process.env.SALT_ROUNDS),
     );
     return hashedPassword;
   }
-  async comparePassword({
+  private async comparePassword({
     hashedPassword,
     password,
   }: {
@@ -82,6 +83,30 @@ export class UserService {
       }
     } catch (error) {
       throw new UnauthorizedException(error);
+    }
+  }
+  async searchUser({
+    userId,
+    query,
+  }: {
+    userId: string;
+    query: string;
+  }): Promise<unknown> {
+    const regex = new RegExp(query, 'ig');
+    try {
+      const user = await this.userService
+        .find({
+          $or: [
+            { username: { $regex: regex } },
+            { displayName: { $regex: regex } },
+          ],
+        })
+        .select('username displayName profilePictureUrl');
+
+      return user.filter((usr) => usr._id.toString() !== userId.toString());
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
   }
 }

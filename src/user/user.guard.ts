@@ -22,7 +22,7 @@ export class UserAuth implements CanActivate {
         secret: process.env.JWT_SECRET_KEY,
       });
 
-      console.log(payload);
+      request.params.userId = payload._id;
     } catch (error) {
       throw new UnauthorizedException();
     }
@@ -30,8 +30,8 @@ export class UserAuth implements CanActivate {
   }
 
   private extractedToken(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization.split(' ') ?? [];
-    console.log(type, token);
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+
     return type === 'Bearer' ? token : undefined;
   }
 }
