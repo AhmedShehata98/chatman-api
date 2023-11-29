@@ -104,9 +104,20 @@ export class UserService {
         .select('username displayName profilePictureUrl');
 
       return user.filter((usr) => usr._id.toString() !== userId.toString());
-      return user;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
+  }
+  async addContact({
+    userId,
+    contactId,
+    conversationId,
+  }: {
+    userId: string;
+    contactId: string;
+    conversationId: string;
+  }) {
+    try {
+    } catch (error) {}
   }
 }

@@ -11,7 +11,7 @@ import {
 import { UserService } from './user.service';
 import { createUserDto, loginDto } from 'src/dtos/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UserAuth } from './user.guard';
+import { AuthGuard } from '../app.guard';
 import { Request as ExpressRequest } from 'express';
 
 @Controller('user')
@@ -31,7 +31,7 @@ export class UserController {
   }
 
   @Get('search')
-  @UseGuards(UserAuth)
+  @UseGuards(AuthGuard)
   async searchForUser(
     @Query('q') query: string,
     @Request() req: ExpressRequest,
