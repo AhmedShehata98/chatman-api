@@ -14,7 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '../app.guard';
 import { Request as ExpressRequest } from 'express';
 
-@Controller('user')
+@Controller('/api/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -41,5 +41,12 @@ export class UserController {
       userId: userId,
       query,
     });
+  }
+
+  @Get('me')
+  @UseGuards(AuthGuard)
+  async getUserData(@Request() req: ExpressRequest) {
+    const { userId } = req.params;
+    return await this.userService.getUserData(userId);
   }
 }

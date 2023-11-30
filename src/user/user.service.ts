@@ -79,7 +79,7 @@ export class UserService {
         );
         return { message: `welcome back ,${user.username}`, token };
       } else {
-        throw new UnauthorizedException();
+        throw new NotFoundException('email or password is invalid');
       }
     } catch (error) {
       throw new UnauthorizedException(error);
@@ -119,5 +119,18 @@ export class UserService {
   }) {
     try {
     } catch (error) {}
+  }
+  async getUserData(userId: string): Promise<IUser> {
+    try {
+      const user = await this.userService
+        .findById(userId)
+        .select(
+          'username email phone displayName profilePictureUrl userContacts userGroup',
+        );
+      if (!user) throw new NotFoundException('Oops ,User not found');
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

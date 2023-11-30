@@ -7,6 +7,6 @@ export const conversationProvider = [
     provide: providerKeys.conversationProvider,
     useFactory: (connection: Connection) =>
       connection.model(DB_MODELS_KEYS.conversationModel, conversationSchema),
-    inject: [providerKeys.conversationProvider],
+    inject: [providerKeys.dbProvider],
   },
 ];

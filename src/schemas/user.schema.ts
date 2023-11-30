@@ -40,7 +40,7 @@ export const userSchema = new mongoose.Schema(
     userContacts: [
       { user: { type: mongoose.Types.ObjectId, ref: 'Contacts' } },
     ],
-    userGroup: [{ type: mongoose.Types.ObjectId, ref: 'Groups' }],
+    userGroups: [{ type: mongoose.Types.ObjectId, ref: 'Groups' }],
   },
   { timestamps: true },
 );

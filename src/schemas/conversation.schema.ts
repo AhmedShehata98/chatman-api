@@ -9,7 +9,8 @@ export const conversationSchema = new mongoose.Schema(
       },
     ],
     conversationType: {
-      type: String(['PRIVATE', 'GROUP']),
+      type: String,
+      enum: ['PRIVATE', 'GROUP'],
       default: 'PRIVATE',
     },
   },
