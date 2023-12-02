@@ -5,7 +5,7 @@ import { userProviders } from 'src/providers/user.provider';
 import { DatabaseModule } from 'src/database/database.module';
 import { JwtModule } from '@nestjs/jwt';
 import { conversationProvider } from 'src/providers/conversation.provider';
-import { contactProvider } from 'src/providers/contact.provider';
+import { messageProvider } from 'src/providers/message.provider';
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { contactProvider } from 'src/providers/contact.provider';
     ChatmanService,
     ...userProviders,
     ...conversationProvider,
-    ...contactProvider,
+    ...messageProvider,
   ],
 })
 export class ChatmanModule {}

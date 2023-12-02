@@ -22,19 +22,10 @@ export class createUserDto {
 
   @IsString()
   @IsNotEmpty()
-  displayName: string;
-
-  @IsString()
-  phone: string;
+  fullName: string;
 
   @IsString()
   profilePictureUrl: string;
-
-  @IsString()
-  userContacts: string;
-
-  @IsString()
-  userGroups: string;
 }
 
 export class loginDto {

@@ -1,12 +1,12 @@
 export const DB_MODELS_KEYS = {
   userModel: 'User',
   conversationModel: 'Conversation',
-  contactProvider: 'Contacts',
+  messageModel: 'Message',
 };
 
 export const providerKeys = {
   dbProvider: 'DATABASE_CONNECTION',
   userProvider: 'USER_MODEL',
   conversationProvider: 'CONVERSATION_MODEL',
-  contactProvider: 'CONTACTS_MODEL',
+  messageProvider: 'MESSAGE_MODEL',
 };

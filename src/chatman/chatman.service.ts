@@ -5,9 +5,10 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
-import { providerKeys } from 'src/constants/databaseModelsName';
-import { IContact } from 'src/interfaces/contact.interface';
+import { DB_MODELS_KEYS, providerKeys } from 'src/constants/databaseModelsName';
+import { CreateMessageDto } from 'src/dtos/message.dto';
 import { IConversation } from 'src/interfaces/conversation.interface';
+import { IMessage } from 'src/interfaces/message.interface';
 import { IUser } from 'src/interfaces/user.interface';
 
 @Injectable()
@@ -16,8 +17,8 @@ export class ChatmanService {
     @Inject(providerKeys.userProvider) private userService: Model<IUser>,
     @Inject(providerKeys.conversationProvider)
     private conversationService: Model<IConversation>,
-    @Inject(providerKeys.contactProvider)
-    private contactService: Model<IContact>,
+    @Inject(providerKeys.messageProvider)
+    private messageService: Model<IMessage>,
     private jwtService: JwtService,
   ) {}
 
@@ -31,56 +32,55 @@ export class ChatmanService {
       throw new InternalServerErrorException(error);
     }
   }
-  async createPrivateConversation({
-    senderId,
-    receiverId,
-  }: {
-    senderId: string;
-    receiverId: string;
-  }): Promise<IConversation> {
+
+  async createMessage(createMessageDto: CreateMessageDto): Promise<IMessage> {
     try {
-      const conversation = await new this.conversationService({
-        participants: [senderId, receiverId],
-        conversationType: 'PRIVATE',
-      });
-      return conversation;
+      const message = await new this.messageService({
+        ...createMessageDto,
+      }).populate([
+        {
+          path: 'sender',
+          select: 'fullName username profilePictureUrl _id',
+          model: DB_MODELS_KEYS.userModel,
+        },
+      ]);
+      message.save();
+      return message;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
-  async addContactToUser({
-    contactId,
+  async changeUserStatus({
     userId,
+    status,
   }: {
-    contactId: string;
     userId: string;
+    status: 'OFFLINE' | 'ONLINE' | 'IDLE';
   }) {
     try {
-      const user = await this.userService.findByIdAndUpdate(userId, {
-        userContacts: [
-          {
-            user: contactId,
-          },
-        ],
-      });
+      const user = await this.userService
+        .findByIdAndUpdate(userId, { status })
+        .select('status');
+      await user.save();
       return user;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
-  async addContact({
-    conversationId,
-    receiverId,
+  async changeUserLastSeen({
+    userId,
+    lastSeen,
   }: {
-    conversationId: string;
-    receiverId: string;
+    userId: string;
+    lastSeen: number;
   }) {
     try {
-      const contact = await new this.contactService({
-        user: receiverId,
-        conversation: conversationId,
-      });
-      return contact;
+      const user = await this.userService
+        .findByIdAndUpdate(userId, { lastSeenDate: lastSeen })
+        .select('lastSeenDate');
+      await user.save();
+
+      return user;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

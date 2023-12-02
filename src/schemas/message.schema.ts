@@ -1,15 +1,16 @@
 import mongoose from 'mongoose';
+import { DB_MODELS_KEYS } from 'src/constants/databaseModelsName';
 
-export const message = new mongoose.Schema(
+export const messageSchema = new mongoose.Schema(
   {
     conversationId: {
       type: mongoose.Types.ObjectId,
-      ref: 'conversation',
+      ref: DB_MODELS_KEYS.conversationModel,
       required: true,
     },
     sender: {
       type: mongoose.Types.ObjectId,
-      ref: 'User',
+      ref: DB_MODELS_KEYS.userModel,
       required: true,
     },
     message: {

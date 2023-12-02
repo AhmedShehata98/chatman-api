@@ -16,18 +16,12 @@ export const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    phone: {
-      type: String,
-      min: [10, 'must be phone at least 10 characters'],
-      max: [14, 'must be phone at most 14 characters'],
-      trim: true,
-    },
     email: {
       type: String,
       trim: true,
       required: true,
     },
-    displayName: {
+    fullName: {
       type: String,
       min: [3, 'must be display Name at least 3 characters'],
       max: [19, 'must be display Name at most 19 characters'],
@@ -36,11 +30,17 @@ export const userSchema = new mongoose.Schema(
     },
     profilePictureUrl: {
       type: String,
+      default: null,
     },
-    userContacts: [
-      { user: { type: mongoose.Types.ObjectId, ref: 'Contacts' } },
-    ],
-    userGroups: [{ type: mongoose.Types.ObjectId, ref: 'Groups' }],
+    status: {
+      type: String,
+      enum: ['OFFLINE', 'ONLINE', 'IDLE'],
+      default: 'OFFLINE',
+    },
+    lastSeenDate: {
+      type: Date,
+      default: Date.now(),
+    },
   },
   { timestamps: true },
 );

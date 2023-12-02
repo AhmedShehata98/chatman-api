@@ -13,11 +13,12 @@ import { CreateConversationDto } from 'src/dtos/conversation.dto';
 import { AuthGuard } from 'src/app.guard';
 import { Request as ExpressRequest } from 'express';
 
-@Controller('conversation')
+@Controller('/api/conversation')
 export class ConversationController {
   constructor(private conversationService: ConversationService) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   async createConversation(
     @Body() createConversationDto: CreateConversationDto,
   ) {
@@ -30,6 +31,6 @@ export class ConversationController {
   @UseGuards(AuthGuard)
   async getUserConversation(@Request() req: ExpressRequest) {
     const { userId } = req.params;
-    return await this.conversationService.getConversation(userId);
+    return await this.conversationService.getUserConversation(userId);
   }
 }

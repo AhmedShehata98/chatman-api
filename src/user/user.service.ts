@@ -37,7 +37,6 @@ export class UserService {
     const decodedPassword = await bcrypt.compare(password, hashedPassword);
     return decodedPassword;
   }
-
   async createAccount(
     createUserDto: createUserDto,
   ): Promise<{ message: string; token: string }> {
@@ -101,31 +100,19 @@ export class UserService {
             { displayName: { $regex: regex } },
           ],
         })
-        .select('username displayName profilePictureUrl');
+        .select('username displayName profilePictureUrl createdAt , updatedAt');
 
       return user.filter((usr) => usr._id.toString() !== userId.toString());
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
   }
-  async addContact({
-    userId,
-    contactId,
-    conversationId,
-  }: {
-    userId: string;
-    contactId: string;
-    conversationId: string;
-  }) {
-    try {
-    } catch (error) {}
-  }
   async getUserData(userId: string): Promise<IUser> {
     try {
       const user = await this.userService
         .findById(userId)
         .select(
-          'username email phone displayName profilePictureUrl userContacts userGroup',
+          'username email fullName profilePictureUrl status lastSeenDate',
         );
       if (!user) throw new NotFoundException('Oops ,User not found');
       return user;

@@ -11,6 +11,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ChatmanService } from './chatman.service';
 import { WS_EVENT_KEY } from 'src/constants/websocketEvents';
+import { CreateMessageDto } from 'src/dtos/message.dto';
 
 @WebSocketGateway({ cors: { origin: 'http://localhost:5173' } })
 export class ChatmanGateway
@@ -38,56 +39,42 @@ export class ChatmanGateway
       const { token } = payload;
       if (!token) throw new NotFoundException(`Auth token not found`);
       const decoded = (await this.chatmanService.verifyToken(token)) as any;
+      this.chatmanService.changeUserStatus({
+        userId: decoded._id,
+        status: 'ONLINE',
+      });
+      this.chatmanService.changeUserLastSeen({
+        userId: decoded._id,
+        lastSeen: Date.now(),
+      });
       this.userId = decoded._id;
     });
   }
   handleDisconnect(client: Socket) {
     console.log(`DISCONNECTED CLIENT ${client.id}`);
-    console.log(this.userId);
+    this.chatmanService.changeUserStatus({
+      userId: this.userId,
+      status: 'OFFLINE',
+    });
+    this.chatmanService.changeUserLastSeen({
+      userId: this.userId,
+      lastSeen: Date.now(),
+    });
+
     client.off(WS_EVENT_KEY.auth, () => {});
   }
 
   @SubscribeMessage(WS_EVENT_KEY.joinConversation)
-  async handleJoinMessage(
-    client: Socket,
-    {
-      senderId,
-      receiverId,
-      conversationsId,
-    }: {
-      senderId: string;
-      receiverId: string;
-      conversationsId: string;
-    },
-  ) {
-    const conversation = await this.chatmanService.createPrivateConversation({
-      senderId: this.userId,
-      receiverId,
-    });
-    const contact = await this.chatmanService.addContact({
-      conversationId: conversation._id,
-      receiverId,
-    });
-    const addContactToUser = await this.chatmanService.addContactToUser({
-      userId: this.userId,
-      contactId: contact._id,
-    });
-    if (conversationsId) {
-      client.join(conversationsId);
-    } else {
-      client.join(conversation._id.toString());
-    }
+  handleJoinConversation(client: Socket, conversationsId: string) {
+    client.join(conversationsId);
+    console.log(client.rooms);
   }
 
-  @SubscribeMessage(WS_EVENT_KEY.joinConversation)
-  async handleSendMessage(
-    client: Socket,
-    {
-      senderId,
-      conversationsId,
-    }: {
-      senderId: string;
-      conversationsId: string;
-    },
-  ) {}
+  @SubscribeMessage(WS_EVENT_KEY.message)
+  async handleSendMessage(client: Socket, payload: CreateMessageDto) {
+    const message = await this.chatmanService.createMessage(payload);
+    return this.io
+      .to(payload.conversationId)
+      .emit(WS_EVENT_KEY.incomingMessage, message);
+  }
 }

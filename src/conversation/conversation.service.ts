@@ -4,11 +4,8 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { providerKeys } from 'src/constants/databaseModelsName';
-import {
-  CreateConversationDto,
-  UserConversationDto,
-} from 'src/dtos/conversation.dto';
+import { DB_MODELS_KEYS, providerKeys } from 'src/constants/databaseModelsName';
+import { CreateConversationDto } from 'src/dtos/conversation.dto';
 import { IConversation } from 'src/interfaces/conversation.interface';
 
 @Injectable()
@@ -25,6 +22,10 @@ export class ConversationService {
       const conversation = await new this.conversationService({
         participants: createConversationDto.participants,
         conversationType: createConversationDto.conversationType,
+        conversationAdmin: createConversationDto.conversationAdmin,
+        conversationName: createConversationDto.conversationName,
+        conversationDescription: createConversationDto.conversationDescription,
+        conversationImage: createConversationDto.conversationImage,
       });
       await conversation.save();
       return conversation;
@@ -32,9 +33,16 @@ export class ConversationService {
       throw new InternalServerErrorException(error);
     }
   }
-  async getConversation(userId: string): Promise<any> {
+  async getUserConversation(userId: string): Promise<any> {
     try {
-      const conversation = await this.conversationService.find({ _id: userId });
+      const conversation = await this.conversationService
+        .find({ participants: userId })
+        .populate({
+          path: 'participants',
+          model: DB_MODELS_KEYS.userModel,
+          select: 'username profilePictureUrl fullName',
+        })
+        .lean();
       return conversation;
     } catch (error) {
       throw new InternalServerErrorException(error);
