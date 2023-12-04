@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ChatmanModule } from './chatman/chatman.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessageModule } from './message/message.module';
+import { UploadModule } from './upload/upload.module';
 
 ConfigModule.forRoot();
 @Module({
@@ -13,6 +14,7 @@ ConfigModule.forRoot();
     UserModule,
     ConversationModule,
     MessageModule,
+    UploadModule,
     ChatmanModule,
     ConfigModule,
   ],

@@ -2,6 +2,7 @@ import {
   Injectable,
   Inject,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
@@ -46,41 +47,6 @@ export class ChatmanService {
       ]);
       message.save();
       return message;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-  async changeUserStatus({
-    userId,
-    status,
-  }: {
-    userId: string;
-    status: 'OFFLINE' | 'ONLINE' | 'IDLE';
-  }) {
-    try {
-      const user = await this.userService
-        .findByIdAndUpdate(userId, { status })
-        .select('status');
-      await user.save();
-      return user;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-  async changeUserLastSeen({
-    userId,
-    lastSeen,
-  }: {
-    userId: string;
-    lastSeen: number;
-  }) {
-    try {
-      const user = await this.userService
-        .findByIdAndUpdate(userId, { lastSeenDate: lastSeen })
-        .select('lastSeenDate');
-      await user.save();
-
-      return user;
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

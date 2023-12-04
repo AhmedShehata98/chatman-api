@@ -12,4 +12,8 @@ export interface IUser extends Document {
   userGroups: string;
   createdAt: string;
   updatedAt: string;
+  status: StatusType;
+  lastSeenDate: number;
 }
+
+export type StatusType = 'OFFLINE' | 'ONLINE' | 'IDLE';

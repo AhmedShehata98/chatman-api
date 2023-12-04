@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsBoolean } from 'class-validator';
 
 export class CreateMessageDto {
   @IsNotEmpty()
@@ -16,4 +16,18 @@ export class CreateMessageDto {
   @IsNotEmpty()
   @IsString()
   media: string;
+}
+
+export class CreateTypingDto {
+  @IsNotEmpty()
+  @IsString()
+  fullName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  conversationId: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  isFinished: boolean;
 }

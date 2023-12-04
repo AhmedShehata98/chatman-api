@@ -9,4 +9,5 @@ export const providerKeys = {
   userProvider: 'USER_MODEL',
   conversationProvider: 'CONVERSATION_MODEL',
   messageProvider: 'MESSAGE_MODEL',
+  cloudinaryProvider: 'CLOUDINARY',
 };

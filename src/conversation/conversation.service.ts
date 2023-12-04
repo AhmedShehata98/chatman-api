@@ -40,7 +40,7 @@ export class ConversationService {
         .populate({
           path: 'participants',
           model: DB_MODELS_KEYS.userModel,
-          select: 'username profilePictureUrl fullName',
+          select: 'username profilePictureUrl fullName status',
         })
         .lean();
       return conversation;

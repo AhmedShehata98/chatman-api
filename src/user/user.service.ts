@@ -10,8 +10,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Model } from 'mongoose';
 import { providerKeys } from 'src/constants/databaseModelsName';
 import { createUserDto, loginDto } from 'src/dtos/user.dto';
-import { IUser } from 'src/interfaces/user.interface';
+import { IUser, StatusType } from 'src/interfaces/user.interface';
 import * as bcrypt from 'bcrypt';
+import slugify from 'slugify';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class UserService {
@@ -20,6 +22,11 @@ export class UserService {
     private jwtService: JwtService,
   ) {}
 
+  private createUsername(fullName: string): string {
+    const randomId = nanoid(8);
+    const username = `${slugify(fullName)}_${randomId}`;
+    return username;
+  }
   private async hashPassword(password: string): Promise<string> {
     const hashedPassword = await bcrypt.hash(
       password,
@@ -44,6 +51,7 @@ export class UserService {
       const hashedPassword = await this.hashPassword(createUserDto.password);
       const user = await new this.userService({
         ...createUserDto,
+        username: this.createUsername(createUserDto.fullName),
         password: hashedPassword,
       });
       await user.save();
@@ -115,6 +123,44 @@ export class UserService {
           'username email fullName profilePictureUrl status lastSeenDate',
         );
       if (!user) throw new NotFoundException('Oops ,User not found');
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+  async changeUserLastSeen({
+    userId,
+    lastSeen,
+  }: {
+    userId: string;
+    lastSeen: number;
+  }): Promise<IUser> {
+    try {
+      if (!userId) throw new BadRequestException('user id is not provided');
+      const user = await this.userService
+        .findByIdAndUpdate(userId, { lastSeenDate: lastSeen })
+        .select('lastSeenDate');
+      await user.save();
+
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+  async changeUserStatus({
+    userId,
+    status,
+  }: {
+    userId: string;
+    status: StatusType;
+  }): Promise<IUser> {
+    try {
+      if (!userId) throw new BadRequestException('user id is not provided');
+      const user = await this.userService
+        .findByIdAndUpdate(userId, { status })
+        .select('status');
+      await user.save();
+
       return user;
     } catch (error) {
       throw new InternalServerErrorException(error);

@@ -3,6 +3,7 @@ import {
   Body,
   Get,
   Post,
+  Put,
   UseInterceptors,
   UseGuards,
   Query,
@@ -13,6 +14,7 @@ import { createUserDto, loginDto } from 'src/dtos/user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthGuard } from '../app.guard';
 import { Request as ExpressRequest } from 'express';
+import { StatusType } from 'src/interfaces/user.interface';
 
 @Controller('/api/user')
 export class UserController {
@@ -48,5 +50,25 @@ export class UserController {
   async getUserData(@Request() req: ExpressRequest) {
     const { userId } = req.params;
     return await this.userService.getUserData(userId);
+  }
+
+  @Put('session-status')
+  @UseGuards(AuthGuard)
+  async handleUpdateSessionStatus(
+    @Body('status') status: StatusType,
+    @Body('lastSeenDate') lastSeenDate: number,
+    @Request() req: ExpressRequest,
+  ) {
+    const { userId } = req.params;
+    const { status: userStatus } = await this.userService.changeUserStatus({
+      userId,
+      status,
+    });
+    const { lastSeenDate: userLastSeenDate } =
+      await this.userService.changeUserLastSeen({
+        userId,
+        lastSeen: lastSeenDate,
+      });
+    return { userStatus, userLastSeenDate };
   }
 }

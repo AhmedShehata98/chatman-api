@@ -3,4 +3,7 @@ export const WS_EVENT_KEY = {
   joinConversation: 'JOIN_CONVERSATION',
   message: 'MESSAGE',
   incomingMessage: 'INCOMING_MESSAGE',
+  typing: 'TYPING',
+  finishTyping: 'FINISH_TYPING',
+  changeUserStatus: 'CHANGE_USER_STATUS',
 };

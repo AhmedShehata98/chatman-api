@@ -6,7 +6,6 @@ export const userSchema = new mongoose.Schema(
       type: String,
       min: [4, 'must be username at least 4 characters'],
       max: [20, 'must be username at most 20 characters'],
-      required: true,
       trim: true,
     },
     password: {

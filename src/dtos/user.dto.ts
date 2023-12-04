@@ -8,10 +8,6 @@ import {
 export class createUserDto {
   @IsString()
   @IsNotEmpty()
-  username: string;
-
-  @IsString()
-  @IsNotEmpty()
   @IsStrongPassword()
   password: string;
 
