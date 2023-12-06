@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Delete } from '@nestjs/common';
 import { IMessage } from 'src/interfaces/message.interface';
 import { MessageService } from './message.service';
 
@@ -14,5 +14,14 @@ export class MessageController {
   @Get(':conversationId')
   async getUserMessage(@Param('conversationId') conversationId: string) {
     return await this.messageService.getUserMessages(conversationId);
+  }
+
+  @Delete('clear/:conversationId')
+  async clearMessages(@Param('conversationId') conversationId: string) {
+    return await this.messageService.clearMessages(conversationId);
+  }
+  @Delete('/:messageId')
+  async deleteMessage(@Param('messageId') messageId: string) {
+    return await this.messageService.clearMessages(messageId);
   }
 }

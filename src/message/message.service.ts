@@ -41,4 +41,22 @@ export class MessageService {
       throw new InternalServerErrorException(error);
     }
   }
+  async clearMessages(conversationId: string) {
+    try {
+      const messages = await this.messageService.deleteMany({ conversationId });
+      return { deletedMessagesCount: messages.deletedCount };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+  async deleteMessageById(messageId: string) {
+    try {
+      const messages = await this.messageService.findByIdAndDelete({
+        _id: messageId,
+      });
+      return messages;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
 }

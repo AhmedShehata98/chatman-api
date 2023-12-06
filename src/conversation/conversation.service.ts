@@ -37,12 +37,53 @@ export class ConversationService {
     try {
       const conversation = await this.conversationService
         .find({ participants: userId })
-        .populate({
-          path: 'participants',
-          model: DB_MODELS_KEYS.userModel,
-          select: 'username profilePictureUrl fullName status',
-        })
+        .populate([
+          {
+            path: 'participants',
+            model: DB_MODELS_KEYS.userModel,
+            select: 'username profilePictureUrl fullName status',
+          },
+
+          {
+            path: 'lastMessage',
+            model: DB_MODELS_KEYS.messageModel,
+            select: 'sender message media',
+          },
+        ])
         .lean();
+      return conversation;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+  async addLastMessage({
+    conversationId,
+    lastMessageId,
+  }: {
+    lastMessageId: string;
+    conversationId: string;
+  }) {
+    try {
+      const conversation = await this.conversationService
+        .findByIdAndUpdate(conversationId, { lastMessage: lastMessageId })
+        .populate([
+          {
+            path: 'lastMessage',
+            model: DB_MODELS_KEYS.messageModel,
+            select: 'sender message media',
+          },
+        ]);
+      conversation.save();
+      return conversation;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+  async deleteConversation(conversationId: string) {
+    try {
+      const conversation = await this.conversationService.deleteOne({
+        _id: conversationId,
+      });
       return conversation;
     } catch (error) {
       throw new InternalServerErrorException(error);

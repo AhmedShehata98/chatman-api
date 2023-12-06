@@ -2,9 +2,11 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Request,
   Delete,
   Inject,
+  Param,
   Body,
   UseGuards,
 } from '@nestjs/common';
@@ -32,5 +34,23 @@ export class ConversationController {
   async getUserConversation(@Request() req: ExpressRequest) {
     const { userId } = req.params;
     return await this.conversationService.getUserConversation(userId);
+  }
+
+  @Put()
+  @UseGuards(AuthGuard)
+  async addLastMessage(
+    @Body('conversationId') conversationId: string,
+    @Body('lastMessageId') lastMessageId: string,
+  ) {
+    return await this.conversationService.addLastMessage({
+      conversationId,
+      lastMessageId,
+    });
+  }
+
+  @Delete('/:conversationId')
+  @UseGuards(AuthGuard)
+  async deleteConversation(@Param('conversationId') conversationId: string) {
+    return await this.conversationService.deleteConversation(conversationId);
   }
 }

@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
+import { DB_MODELS_KEYS } from 'src/constants/databaseModelsName';
 
 export const conversationSchema = new mongoose.Schema(
   {
     conversationAdmin: {
       type: mongoose.Types.ObjectId,
-      ref: 'User',
+      ref: DB_MODELS_KEYS.userModel,
     },
     conversationName: {
       type: String,
@@ -20,7 +21,7 @@ export const conversationSchema = new mongoose.Schema(
     participants: [
       {
         type: mongoose.Types.ObjectId,
-        ref: 'User',
+        ref: DB_MODELS_KEYS.userModel,
         required: true,
       },
     ],
@@ -29,6 +30,11 @@ export const conversationSchema = new mongoose.Schema(
       enum: ['PRIVATE', 'GROUP'],
       default: 'PRIVATE',
       required: true,
+    },
+    lastMessage: {
+      type: mongoose.Types.ObjectId,
+      ref: DB_MODELS_KEYS.messageModel,
+      default: null,
     },
   },
   { timestamps: true },

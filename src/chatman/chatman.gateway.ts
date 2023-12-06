@@ -17,7 +17,9 @@ import { ChatmanService } from './chatman.service';
 import { WS_EVENT_KEY } from 'src/constants/websocketEvents';
 import { CreateMessageDto, CreateTypingDto } from 'src/dtos/message.dto';
 
-@WebSocketGateway({ cors: { origin: 'http://localhost:5173' } })
+@WebSocketGateway({
+  cors: { origin: '*' },
+})
 export class ChatmanGateway
   implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
@@ -52,6 +54,7 @@ export class ChatmanGateway
   handleJoinConversation(client: Socket, conversationsId: string) {
     client.join(conversationsId);
     console.log('Joined to room : ' + conversationsId);
+    this.io.emit(WS_EVENT_KEY.createdConversation, conversationsId);
   }
 
   @SubscribeMessage(WS_EVENT_KEY.message)
