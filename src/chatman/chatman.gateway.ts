@@ -77,4 +77,17 @@ export class ChatmanGateway
       .to(payload.conversationId)
       .emit(WS_EVENT_KEY.finishTyping, payload);
   }
+
+  @SubscribeMessage(WS_EVENT_KEY.joinFeeds)
+  handleJoinFeeds(client: Socket, payload) {
+    client.join(payload.feedId);
+    console.log('📬 Joined to feed ' + payload.feedId);
+  }
+
+  @SubscribeMessage(WS_EVENT_KEY.newFeedPost)
+  handleAddNewFeedPost(client: Socket, payload) {
+    return this.io
+      .to(payload.feedId)
+      .emit(WS_EVENT_KEY.newFeedPost, payload.content);
+  }
 }

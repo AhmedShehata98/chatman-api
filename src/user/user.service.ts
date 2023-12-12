@@ -60,7 +60,7 @@ export class UserService {
         { secret: process.env.JWT_SECRET_KEY, expiresIn: '24h' },
       );
       return {
-        message: `welcome ${user.displayName} to your awesome chat app ,enjoy with us`,
+        message: `welcome ${user.fullName} to your awesome chat app ,enjoy with us`,
         token,
       };
     } catch (error) {
@@ -98,7 +98,7 @@ export class UserService {
   }: {
     userId: string;
     query: string;
-  }): Promise<unknown> {
+  }): Promise<IUser[]> {
     const regex = new RegExp(query, 'ig');
     try {
       const user = await this.userService
@@ -108,9 +108,10 @@ export class UserService {
             { displayName: { $regex: regex } },
           ],
         })
-        .select('username displayName profilePictureUrl createdAt , updatedAt');
-
-      return user.filter((usr) => usr._id.toString() !== userId.toString());
+        .select('username fullName profilePictureUrl createdAt , updatedAt');
+      return query === ''
+        ? []
+        : user.filter((usr) => usr._id.toString() !== userId.toString());
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

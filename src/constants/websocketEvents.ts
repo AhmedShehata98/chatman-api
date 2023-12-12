@@ -7,4 +7,6 @@ export const WS_EVENT_KEY = {
   typing: 'TYPING',
   finishTyping: 'FINISH_TYPING',
   changeUserStatus: 'CHANGE_USER_STATUS',
+  newFeedPost: 'NEW_FEED_POST',
+  joinFeeds: 'JOIN_FEEDS',
 };

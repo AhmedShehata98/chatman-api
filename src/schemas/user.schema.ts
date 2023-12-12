@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { DB_MODELS_KEYS } from 'src/constants/databaseModelsName';
 
 export const userSchema = new mongoose.Schema(
   {
@@ -40,6 +41,12 @@ export const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
+    posts: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: DB_MODELS_KEYS.posts,
+      },
+    ],
   },
   { timestamps: true },
 );

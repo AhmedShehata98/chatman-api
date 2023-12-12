@@ -7,6 +7,8 @@ import { ChatmanModule } from './chatman/chatman.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessageModule } from './message/message.module';
 import { UploadModule } from './upload/upload.module';
+import { PostModule } from './post/posts.module';
+import { FeedModule } from './feed/feed.module';
 
 ConfigModule.forRoot();
 @Module({
@@ -15,6 +17,8 @@ ConfigModule.forRoot();
     ConversationModule,
     MessageModule,
     UploadModule,
+    PostModule,
+    FeedModule,
     ChatmanModule,
     ConfigModule,
   ],

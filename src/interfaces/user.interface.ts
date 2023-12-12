@@ -5,11 +5,8 @@ export interface IUser extends Document {
   username: string;
   password: string;
   email: string;
-  displayName: string;
-  phone: string;
+  fullName: string;
   profilePictureUrl: string;
-  userContacts: string;
-  userGroups: string;
   createdAt: string;
   updatedAt: string;
   status: StatusType;
