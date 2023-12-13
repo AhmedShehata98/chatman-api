@@ -65,4 +65,27 @@ export class FeedService {
       throw new InternalServerErrorException(error);
     }
   }
+
+  async checkIsFeedFollower(userId: string) {
+    try {
+      const isFollower = await this.feedService.find({
+        followers: { $in: userId },
+      });
+      return { isFollower: isFollower.length >= 1 };
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async followFeed({ feedId, userId }: { userId: string; feedId: string }) {
+    try {
+      const feed = await this.feedService.findByIdAndUpdate(feedId, {
+        $push: { followers: userId },
+      });
+      await feed.save();
+      return 'you are now following this feed';
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
 }
