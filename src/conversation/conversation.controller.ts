@@ -9,6 +9,7 @@ import {
   Param,
   Body,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { CreateConversationDto } from 'src/dtos/conversation.dto';
@@ -31,9 +32,15 @@ export class ConversationController {
 
   @Get()
   @UseGuards(AuthGuard)
-  async getUserConversation(@Request() req: ExpressRequest) {
+  async getUserConversation(
+    @Request() req: ExpressRequest,
+    @Query('q') q: string,
+  ) {
     const { userId } = req.params;
-    return await this.conversationService.getUserConversation(userId);
+    return await this.conversationService.getUserConversation({
+      userId,
+      query: q,
+    });
   }
 
   @Put()

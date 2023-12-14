@@ -51,4 +51,38 @@ export class ChatmanService {
       throw new InternalServerErrorException(error);
     }
   }
+
+  async setUserStatus({
+    status,
+    socketId,
+  }: {
+    socketId: string;
+    status: 'ONLINE' | 'OFFLINE';
+  }) {
+    try {
+      const user = await this.userService.updateOne({ socketId }, { status });
+
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async addSocketIdToUser({
+    socketId,
+    userId,
+  }: {
+    userId: string;
+    socketId: string;
+  }) {
+    try {
+      const user = await this.userService.updateOne(
+        { _id: userId },
+        { socketId },
+      );
+      return user;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
 }

@@ -33,25 +33,68 @@ export class ConversationService {
       throw new InternalServerErrorException(error);
     }
   }
-  async getUserConversation(userId: string): Promise<any> {
+  async getUserConversation({
+    query,
+    userId,
+  }: {
+    userId: string;
+    query: string;
+  }): Promise<any> {
     try {
-      const conversation = await this.conversationService
-        .find({ participants: userId })
-        .populate([
-          {
-            path: 'participants',
-            model: DB_MODELS_KEYS.userModel,
-            select: 'username profilePictureUrl fullName status',
-          },
+      // const regex = new RegExp(query, 'ig');
+      if (query !== '' || query !== undefined) {
+        let newConversation = [];
+        const conversation = await this.conversationService
+          .find({ participants: userId })
 
-          {
-            path: 'lastMessage',
-            model: DB_MODELS_KEYS.messageModel,
-            select: 'sender message media',
-          },
-        ])
-        .lean();
-      return conversation;
+          .populate([
+            {
+              path: 'participants',
+              model: DB_MODELS_KEYS.userModel,
+              select: 'username profilePictureUrl fullName status',
+            },
+
+            {
+              path: 'lastMessage',
+              model: DB_MODELS_KEYS.messageModel,
+              select: 'sender message media',
+            },
+          ])
+          .lean()
+          .finally()
+          .then((conversation) => {
+            const newConvers = conversation.filter((convers) => {
+              const participantIdx = convers.participants.findIndex(
+                (participant) => participant.id !== userId,
+              );
+              return convers.participants[participantIdx].fullName.includes(
+                query,
+              );
+            });
+            newConversation = newConvers;
+          });
+        return newConversation;
+      } else {
+        const conversation = await this.conversationService
+          .find({ participants: userId })
+
+          .populate([
+            {
+              path: 'participants',
+              model: DB_MODELS_KEYS.userModel,
+              select: 'username profilePictureUrl fullName status',
+            },
+
+            {
+              path: 'lastMessage',
+              model: DB_MODELS_KEYS.messageModel,
+              select: 'sender message media',
+            },
+          ])
+          .lean();
+
+        return conversation;
+      }
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

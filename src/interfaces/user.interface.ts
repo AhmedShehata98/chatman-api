@@ -9,6 +9,7 @@ export interface IUser extends Document {
   profilePictureUrl: string;
   createdAt: string;
   updatedAt: string;
+  socketId: string;
   status: StatusType;
   lastSeenDate: number;
 }

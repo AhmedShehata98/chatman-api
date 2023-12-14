@@ -38,22 +38,36 @@ export class ChatmanGateway
       const { token } = payload;
       if (!token) throw new NotFoundException(`Auth token not found`);
       const decoded = (await this.chatmanService.verifyToken(token)) as any;
+      if (decoded) {
+        await this.chatmanService.addSocketIdToUser({
+          userId: decoded._id,
+          socketId: client.id,
+        });
+      }
       if (!decoded)
         throw new UnauthorizedException('Unauthorized user try again');
     });
   }
   async handleDisconnect(client: Socket) {
-    console.log(`DISCONNECTED CLIENT ${client.id}`);
+    console.log(`👋🏻 DISCONNECTED CLIENT ${client.id}`);
+    await this.chatmanService.setUserStatus({
+      socketId: client.id,
+      status: 'OFFLINE',
+    });
+
     client.off(WS_EVENT_KEY.auth, () => {});
     client.off(WS_EVENT_KEY.joinConversation, () => {});
     client.off(WS_EVENT_KEY.typing, () => {});
     client.off(WS_EVENT_KEY.message, () => {});
+    client.off(WS_EVENT_KEY.finishTyping, () => {});
+    client.off(WS_EVENT_KEY.joinFeeds, () => {});
+    client.off(WS_EVENT_KEY.newFeedPost, () => {});
   }
 
   @SubscribeMessage(WS_EVENT_KEY.joinConversation)
   handleJoinConversation(client: Socket, conversationsId: string) {
     client.join(conversationsId);
-    console.log('Joined to room : ' + conversationsId);
+    console.log('🧑🏻‍💻 Joined to room : ' + conversationsId);
     this.io.emit(WS_EVENT_KEY.createdConversation, conversationsId);
   }
 

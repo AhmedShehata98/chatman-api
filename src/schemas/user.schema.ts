@@ -41,6 +41,11 @@ export const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
+    socketId: {
+      type: String,
+      trim: true,
+      default: null,
+    },
     posts: [
       {
         type: mongoose.Types.ObjectId,
