@@ -62,6 +62,7 @@ export class ChatmanGateway
     client.off(WS_EVENT_KEY.finishTyping, () => {});
     client.off(WS_EVENT_KEY.joinFeeds, () => {});
     client.off(WS_EVENT_KEY.newFeedPost, () => {});
+    client.off(WS_EVENT_KEY.like, () => {});
   }
 
   @SubscribeMessage(WS_EVENT_KEY.joinConversation)
@@ -103,5 +104,10 @@ export class ChatmanGateway
     return this.io
       .to(payload.feedId)
       .emit(WS_EVENT_KEY.newFeedPost, payload.content);
+  }
+
+  @SubscribeMessage(WS_EVENT_KEY.like)
+  handleAddLike(client: Socket, payload) {
+    return this.io.to(payload.feedId).emit(WS_EVENT_KEY.like, payload.user);
   }
 }

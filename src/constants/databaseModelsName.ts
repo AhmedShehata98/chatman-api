@@ -15,4 +15,5 @@ export const providerKeys = {
   cloudinaryProvider: 'CLOUDINARY',
   postsProvider: 'POSTS',
   feedsProvider: 'FEEDS',
+  commentsProvider: 'Comments',
 };

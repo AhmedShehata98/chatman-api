@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
 import { IFeeds } from './feed.interface';
+import { IUser } from './user.interface';
 
 export interface IPost extends Document {
   _id: string;
@@ -14,4 +15,5 @@ export interface IPost extends Document {
     shareCount: number;
     shareUser: string;
   };
+  reaction: IUser[];
 }

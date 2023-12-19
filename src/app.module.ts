@@ -9,6 +9,7 @@ import { MessageModule } from './message/message.module';
 import { UploadModule } from './upload/upload.module';
 import { PostModule } from './post/posts.module';
 import { FeedModule } from './feed/feed.module';
+import { CommentModule } from './comment/comment.module';
 
 ConfigModule.forRoot();
 @Module({
@@ -19,6 +20,7 @@ ConfigModule.forRoot();
     UploadModule,
     PostModule,
     FeedModule,
+    CommentModule,
     ChatmanModule,
     ConfigModule,
   ],

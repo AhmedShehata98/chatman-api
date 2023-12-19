@@ -38,6 +38,12 @@ export const postSchema = new mongoose.Schema(
         ref: DB_MODELS_KEYS.userModel,
       },
     },
+    reaction: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: DB_MODELS_KEYS.userModel,
+      },
+    ],
   },
   { timestamps: true },
 );
